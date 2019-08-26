@@ -1,0 +1,193 @@
+# 
+# # plot(hist(beta0))
+# # load functions
+# 
+# # for each pair of beta1 and beta0, solve for n then take average
+# sample_size_list_pair1=NULL
+# 
+# error_count_pair1=0
+# warn_count_pair1=0
+# 
+# sim_count=0
+# 
+# error_round_pair1=NULL
+# warn_round_pair1=NULL
+# error_mesg_pair1=NULL
+# warn_mesg_pair1=NULL
+# 
+# error_round_pair1=NULL
+# warn_round_pair1=NULL
+# error_mesg_pair1=NULL
+# warn_mesg_pair1=NULL
+# 
+# withProgress(message = 'Sample Size Calculating', value = 0, {
+#   for(i in 1:LINKAGE_SAMPLE){
+#     print(i)
+#     incProgress(1/LINKAGE_SAMPLE, detail = paste0(floor(i/LINKAGE_SAMPLE*100)," percent done"))
+#     # i=974 when some ill beta1 and beta0 generated so that we exaust ciL there is no solution, then we throw this draw and report this situation
+#     beta1=beta1_sample[i]
+#     beta0=beta0_sample[i]
+#     
+#     aA = piA*2
+#     bA = 2-aA
+#     # aA = 0.25*2
+#     # bA = 2-aA
+#     cA = cFunc(aA, bA, beta1)
+#     dA = dFunc(aA, bA, beta1)
+#     eA = eFunc(aA, bA, beta0, K)
+#     fA = fFunc(aA, bA, beta0, K)
+#     
+#     aB = piB*2
+#     bB = 2-aB
+#     # aB = 0.25*2
+#     # bB = 2-aB
+#     cB = cFunc(aB, bB, beta1)
+#     dB = dFunc(aB, bB, beta1)
+#     eB = eFunc(aB, bB, beta0, K)
+#     fB = fFunc(aB, bB, beta0, K)
+#     
+#     aC = piC*2
+#     bC = 2-aC
+#     # aC = 0.25*2
+#     # bC = 2-aC
+#     cC = cFunc(aC, bC, beta1)
+#     dC = dFunc(aC, bC, beta1)
+#     eC = eFunc(aC, bC, beta0, K)
+#     fC = fFunc(aC, bC, beta0, K)
+#     
+#     ciZ=qnorm(1-(1-COVRAGE)/2) # critical value of coverage
+#     
+#     for(ciL in seq(CIL_MIN,CIL_MAX,by=CIL_STEP))
+#     {
+#       # print(ciL)
+#       # get sample size solved
+#       # print(ciL)
+#       # ciL=0.26
+#       if(ciL/2==(max(c(piA,piB,piC))-min(c(piA,piB,piC)))){
+#         next
+#       } 
+#       tryCatch({
+#         # set.seed(i)
+#         # skip iteration and go to next iteration if ciL/2==(max(c(piA,piB,piC))-min(c(piA,piB,piC)))
+#         # sample_size_tmp_pair1 <- ceiling(uniroot(sample_size_equation, c(SAMPLE_SIZE_LLIMIT, SAMPLE_SIZE_ULIMIT))$root)
+#         sample_size_tmp_pair1 <- max(ceiling(uniroot.all(function(n) sample_size_equation(K,
+#                                                                                           piA, piB, piC,
+#                                                                                           beta1, beta0, 
+#                                                                                           aA, bA, cA, dA, eA, fA,
+#                                                                                           aB, bB, cB, dB, eB, fB,
+#                                                                                           ciZ, ciL,
+#                                                                                           n), c(SAMPLE_SIZE_LLIMIT, SAMPLE_SIZE_ULIMIT))))
+#         # All <- uniroot.all(sample_size_equation, c(0, 8))
+#         # calculate powerpower
+#         # 1-pnorm((ciL/2-(max(c(piA,piB)-min(piA,piB))))/sqrt(sigmaSqABDiffFunc(sample_size_tmp_pair1)))+pnorm((-ciL/2-(max(c(piA,piB)-min(piA,piB))))/sqrt(sigmaSqABDiffFunc(sample_size_tmp_pair1)))
+#         pow_pair1=1-pnorm((ciL/2-abs(muABDiffFunc(K,
+#                                                   piA, piB, piC,
+#                                                   beta1, beta0, 
+#                                                   aA, bA, cA, dA, eA, fA,
+#                                                   aB, bB, cB, dB, eB, fB,
+#                                                   sample_size_tmp_pair1)))/sqrt(sigmaSqABDiffFunc(K,
+#                                                                                                   piA, piB, piC,
+#                                                                                                   beta1, beta0, 
+#                                                                                                   aA, bA, cA, dA, eA, fA,
+#                                                                                                   aB, bB, cB, dB, eB, fB,
+#                                                                                                   sample_size_tmp_pair1)))
+#         if(pow_pair1<POW) break
+#       },
+#       error = function(c) {
+#         error_round_tmp_pair1=cbind(i,beta1,beta0,ciL)
+#         error_round_pair1<<-rbind(error_round_pair1,error_round_tmp_pair1)
+#         # next
+#       },
+#       warning = function(c) {
+#         warn_round_tmp_pair1=cbind(i,beta1,beta0,ciL)
+#         warn_round_pair1<<-rbind(warn_round_pair1,warn_round_tmp_pair1)
+#         # print(i)
+#         # print(ciL)
+#         # next
+#       },
+#       finally = {# posterior_sample_burn<<-window(posterior_sample,start=BURNING, end=MCMC_SAMPLE)
+#         # posterior_sample_cmb<<-do.call(rbind, posterior_sample_burn)
+#       }
+#       )
+#       
+#     }
+#     # catch the first time power is lower than target
+#     tryCatch({
+#       ciL=ciL-CIL_STEP
+#       sample_size_tmp_pair1 <- max(ceiling(uniroot.all(function(n) sample_size_equation(K,
+#                                                                                         piA, piB, piC,
+#                                                                                         beta1, beta0, 
+#                                                                                         aA, bA, cA, dA, eA, fA,
+#                                                                                         aB, bB, cB, dB, eB, fB,
+#                                                                                         n), c(SAMPLE_SIZE_LLIMIT, SAMPLE_SIZE_ULIMIT))))
+#       # calculate powerpower
+#       # 1-pnorm((ciL/2-(max(c(piA,piB)-min(piA,piB))))/sqrt(sigmaSqABDiffFunc(sample_size_tmp_pair1)))+pnorm((-ciL/2-(max(c(piA,piB)-min(piA,piB))))/sqrt(sigmaSqABDiffFunc(sample_size_tmp_pair1)))
+#       pow_pair1=1-pnorm((ciL/2-abs(muABDiffFunc(K,
+#                                                 piA, piB, piC,
+#                                                 beta1, beta0, 
+#                                                 aA, bA, cA, dA, eA, fA,
+#                                                 aB, bB, cB, dB, eB, fB,
+#                                                 sample_size_tmp_pair1)))/sqrt(sigmaSqABDiffFunc(K,
+#                                                                                                 piA, piB, piC,
+#                                                                                                 beta1, beta0, 
+#                                                                                                 aA, bA, cA, dA, eA, fA,
+#                                                                                                 aB, bB, cB, dB, eB, fB,
+#                                                                                                 sample_size_tmp_pair1)))
+#     },
+#     error = function(c) {
+#       error_mesg_pair1=rbind(error_mesg_pair1,c)
+#       # next
+#     },
+#     warning = function(c) {
+#       warn_mesg_pair1=rbind(error_mesg_pair1,c)
+#       # next
+#     },
+#     finally = {# posterior_sample_burn<<-window(posterior_sample,start=BURNING, end=MCMC_SAMPLE)
+#       # posterior_sample_cmb<<-do.call(rbind, posterior_sample_burn)
+#     }
+#     )
+#     
+#     cvrg=1-(1-round(2*pnorm(ciZ)-1,digits = 3))
+#     # sample
+#     
+#     sample_size_pair1=cbind(ss=sample_size_tmp_pair1,coverage=cvrg,power=pow_pair1,length_ci=ciL,
+#                             bt1=round(beta1,digits = 4),bt0=round(beta0,digits = 4))
+#     sample_size_list_pair1=rbind(sample_size_list_pair1,sample_size_pair1)
+#   }
+#   
+# })
+# 
+# # generate summary sample size for different arms
+# index_error_pair1=unique(error_round_pair1[,1])
+# error_count_pair1=length(index_error_pair1)
+# index_warn_pair1=unique(warn_round_pair1[,1])
+# warn_count_pair1=length(index_warn_pair1)
+# index_error_warn_pair1=c(index_error_pair1,index_warn_pair1)
+# if(is.null(index_error_warn_pair1)){
+#   sample_size_list_pure_pair1=sample_size_list_pair1
+# }else{
+#   sample_size_list_pure_pair1=sample_size_list_pair1[-index_error_warn_pair1,]
+# }
+# # head(sample_size_list_pure_pair1)
+# sample_size_mean_pair1=ceiling(mean(sample_size_list_pure_pair1[,1]))
+# sample_size_median_pair1=ceiling(median(sample_size_list_pure_pair1[,1]))
+# 
+# 
+# # choose sample size
+# 
+# sample_size_mean=sample_size_mean_pair1
+# sample_size_median=sample_size_median_pair1
+# nrow(sample_size_list_pure_pair1)
+# index_error_pair1
+# index_warn_pair1
+# # error_mesg_pair1
+# # warn_mesg_pair1
+# 
+# # head(sample_size_list_pure_pair1)
+# # 
+# # end.time <- Sys.time()
+# # time.taken <- end.time - start.time
+# # time.taken
+# 
+# sample_size_mean
+# sample_size_median

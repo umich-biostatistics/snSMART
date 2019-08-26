@@ -1,0 +1,10 @@
+name: calculation_app
+title:
+username:
+account: kidwell
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 958213
+bundleId: 2119413
+url: https://kidwell.shinyapps.io/calculation_app/
+when: 1559256100.21426
